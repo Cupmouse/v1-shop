@@ -4,7 +4,6 @@ import Col from 'react-bootstrap/Col';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import queryString from 'query-string';
-import moment from 'moment';
 
 import SearchResult from './SearchResult';
 import SearchParams from './SearchParams';
@@ -30,24 +29,26 @@ class Search extends React.Component {
     if (typeof parsed.exchanges !== 'undefined') {
       if (typeof parsed.exchanges === 'string') {
         query.exchanges = [ parsed.exchanges ];
-      } else {
+      } else if (Array.isArray(parsed.exchanges)
+        && parsed.exchanges.every(elem => typeof elem === 'string')) {
         query.exchanges = parsed.exchanges;
       }
     }
     if (typeof parsed.pairs !== 'undefined') {
       if (typeof parsed.pairs === 'string') {
         query.pairs = [ parsed.pairs ];
-      } else {
+      } else if (Array.isArray(parsed.exchanges)
+        && parsed.exchanges.every(elem => typeof elem === 'string')) {
         query.pairs = parsed.pairs;
       }
     }
-    if (typeof parsed.date_start !== 'undefined') {
-      query.date_start = moment(parsed.date_start*1000);
+    if (typeof parsed.date_start === 'string') {
+      query.date_start = parseInt(parsed.date_start);
     }
-    if (typeof parsed.date_end !== 'undefined') {
-      query.date_end = moment(parsed.date_end*1000);
+    if (typeof parsed.date_end === 'string') {
+      query.date_end = parseInt(parsed.date_end);
     }
-    if (typeof parsed.page !== 'undefined') {
+    if (typeof parsed.page === 'string') {
       query.page = parseInt(parsed.page);
     }
 
@@ -108,36 +109,14 @@ class Search extends React.Component {
     this.unlisten();
   }
 
-  convertFromQuery(query) {
-    const obj = {};
-
-    if (typeof query.exchanges !== 'undefined') {
-      obj.exchanges = query.exchanges;
-    }
-    if (typeof query.pairs !== 'undefined') {
-      obj.pairs = query.pairs;
-    }
-    if (typeof query.date_start !== 'undefined') {
-      obj.date_start = query.date_start.unix();
-    }
-    if (typeof query.date_end !== 'undefined') {
-      obj.date_end = query.date_end.unix();
-    }
-    if (typeof query.page !== 'undefined') {
-      obj.page = query.page;
-    }
-    
-    return obj;
-  }
-
   searchCallback(query) {
-    this.props.history.push('/search?' + queryString.stringify(this.convertFromQuery(query)));
+    this.props.history.push('/search?' + queryString.stringify(query));
   }
 
   changePage(page) {
     const new_query = this.makeQueryFromLocation(this.props.location);
     new_query.page = page;
-    this.props.history.push('/search?' + queryString.stringify(this.convertFromQuery(new_query)));
+    this.props.history.push('/search?' + queryString.stringify(new_query));
   }
 
   render() {

@@ -8,10 +8,14 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { withCookies } from 'react-cookie';
 
 import 'react-dates/initialize';
-import Home from './Home.js';
-import Signup from './user/Signup.js';
-import Login from './user/Login.js';
-import Search from './search/Search.js';
+
+import Home from './Home';
+import Signup from './user/Signup';
+import Login from './user/Login';
+import Search from './search/Search';
+import User from './user/User';
+import PurchaseHistory from './user/PurchaseHistory';
+import NotFound from './NotFound';
 
 const exchanges = {
   'bitmex': 'Bitmex',
@@ -101,6 +105,7 @@ class App extends React.Component {
         session_id: null,
         logged_in: false,
       });
+      this.props.history.push('/');
     });
   }
 
@@ -156,6 +161,9 @@ class App extends React.Component {
               <Route exact path='/search' component={(props) => <Search exchanges={exchanges} {...props} />} />
               <Route exact path='/signup' component={(props) => <Signup onLogin={this.onLogin} {...props} />} />
               <Route exact path='/login' component={(props) => <Login onLogin={this.onLogin} {...props} />} />
+              <Route exact path='/user' component={(props) => <User user_id={this.state.user_id} {...props} />} />
+              <Route exact path='/user/purchase_history' component={PurchaseHistory} />
+              <Route component={NotFound} />
             </Switch>
           </Container>
         </BrowserRouter>

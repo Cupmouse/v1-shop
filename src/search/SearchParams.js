@@ -2,8 +2,8 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Button from 'react-bootstrap/Button';
-import { DateRangePicker } from 'react-dates'
 import moment from 'moment';
+import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 
 class SearchParams extends React.Component {
@@ -12,8 +12,8 @@ class SearchParams extends React.Component {
 
     const exchanges = typeof props.query_exchanges === 'undefined' ? Object.keys(props.exchanges) : props.query_exchanges;
     const pairs = typeof props.pairs === 'undefined' ? '' : props.pairs.join(',');
-    const date_start = typeof props.date_start === 'undefined' ? null : props.date_start;
-    const date_end = typeof props.date_end === 'undefined' ? null : props.date_end;
+    const date_start = typeof props.date_start === 'undefined' ? null : moment(props.date_start*1000);
+    const date_end = typeof props.date_end === 'undefined' ? null : moment(props.date_end*1000);
 
     this.state = {
       exchanges,
@@ -42,7 +42,7 @@ class SearchParams extends React.Component {
 
     this.setState({ exchanges });
   }
-
+  
   onSearch() {
     const query = {};
 
@@ -53,11 +53,11 @@ class SearchParams extends React.Component {
       .filter(pair => pair.length > 0);
     
     if (this.state.date_start !== null) {
-      query.date_start = this.state.date_start;
+      query.date_start = this.state.date_start.unix();
     }
     
     if (this.state.date_end !== null) {
-      query.date_end = this.state.date_end;
+      query.date_end = this.state.date_end.unix();
     }
 
     this.props.searchcb(query);
