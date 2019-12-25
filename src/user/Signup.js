@@ -1,7 +1,9 @@
 import React from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+
+import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
@@ -112,7 +114,7 @@ class Signup extends React.Component {
 
   render() {
     return (
-      <div className='Signup'>
+      <Container className='Signup'>
         <h1>Create a New Account</h1>
         <Form>
           <Form.Group controlId='formUserId'>
@@ -147,7 +149,7 @@ class Signup extends React.Component {
         </Form>
         {this.getWarning()}
         {this.getAlert()}
-      </div>
+      </Container>
     )
   }
 }

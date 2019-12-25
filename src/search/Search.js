@@ -1,9 +1,10 @@
 import React from 'react';
+import queryString from 'query-string';
+
+import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ProgressBar from 'react-bootstrap/ProgressBar';
-
-import queryString from 'query-string';
 
 import SearchResult from './SearchResult';
 import SearchParams from './SearchParams';
@@ -121,7 +122,7 @@ class Search extends React.Component {
 
   render() {
     return (
-      <div className='Search'>
+      <Container className='Search' fluid={true}>
         <Row>
           <Col lg={{order: 2, span: 'auto'}}>
             <SearchParams
@@ -145,7 +146,7 @@ class Search extends React.Component {
             }
           </Col>
         </Row>
-      </div>
+      </Container>
     );
   }
 }

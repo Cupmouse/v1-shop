@@ -1,5 +1,8 @@
 import React from 'react';
+
 import { Link } from 'react-router-dom';
+
+import Container from 'react-bootstrap/Container';
 
 class User extends React.Component {
   render() {
@@ -8,10 +11,10 @@ class User extends React.Component {
     }
 
     return (
-      <div className='User'>
+      <Container className='User'>
         <h1>User: {this.props.user_id}</h1>
         <h2><Link to='/user/purchase_history'>Purchase History</Link></h2>
-      </div>
+      </Container>
     );
   }
 }

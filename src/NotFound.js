@@ -1,11 +1,13 @@
 import React from 'react';
 
+import Container from 'react-bootstrap/Container';
+
 class NotFound extends React.Component {
   render() {
     return (
-      <div className='NotFound'>
+      <Container className='NotFound'>
         <h1>404 Not Found</h1>
-      </div>
+      </Container>
     );
   }
 }

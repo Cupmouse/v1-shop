@@ -1,13 +1,13 @@
 import React from 'react';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
-import { IoMdPersonAdd, IoMdHome, IoMdSearch } from 'react-icons/io';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { LinkContainer } from 'react-router-bootstrap';
-import { withCookies } from 'react-cookie';
 
 import 'react-dates/initialize';
+
+import { withCookies } from 'react-cookie';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { IoMdPersonAdd, IoMdHome, IoMdSearch } from 'react-icons/io';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import { LinkContainer } from 'react-router-bootstrap';
 
 import Home from './Home';
 import Signup from './user/Signup';
@@ -142,7 +142,7 @@ class App extends React.Component {
     return (
       <div className='App'>
         <BrowserRouter>
-          <header className='App-header'>
+          <header className='App-Header mb-3'>
             <Navbar bg='light' expand='lg'>
               <LinkContainer to='/'><Navbar.Brand>Exchange Dataset</Navbar.Brand></LinkContainer>
               <Navbar.Toggle aria-controls='basic-navbar-nav' />
@@ -155,17 +155,15 @@ class App extends React.Component {
               </Navbar.Collapse>
             </Navbar>
           </header>
-          <Container className='pt-3'>
-            <Switch>
-              <Route exact path='/' component={(props) => <Home exchanges={exchanges} {...props} />} />
-              <Route exact path='/search' component={(props) => <Search exchanges={exchanges} {...props} />} />
-              <Route exact path='/signup' component={(props) => <Signup onLogin={this.onLogin} {...props} />} />
-              <Route exact path='/login' component={(props) => <Login onLogin={this.onLogin} {...props} />} />
-              <Route exact path='/user' component={(props) => <User user_id={this.state.user_id} {...props} />} />
-              <Route exact path='/user/purchase_history' component={PurchaseHistory} />
-              <Route component={NotFound} />
-            </Switch>
-          </Container>
+          <Switch>
+            <Route exact path='/' component={(props) => <Home exchanges={exchanges} {...props} />} />
+            <Route exact path='/search' component={(props) => <Search exchanges={exchanges} {...props} />} />
+            <Route exact path='/signup' component={(props) => <Signup onLogin={this.onLogin} {...props} />} />
+            <Route exact path='/login' component={(props) => <Login onLogin={this.onLogin} {...props} />} />
+            <Route exact path='/user' component={(props) => <User user_id={this.state.user_id} {...props} />} />
+            <Route exact path='/user/purchase_history' component={PurchaseHistory} />
+            <Route component={NotFound} />
+          </Switch>
         </BrowserRouter>
       </div>
     );

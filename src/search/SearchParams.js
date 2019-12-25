@@ -1,10 +1,12 @@
 import React from 'react';
+
+import moment from 'moment';
+
+import { DateRangePicker } from 'react-dates';
+import 'react-dates/lib/css/_datepicker.css';
 import Form from 'react-bootstrap/Form';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Button from 'react-bootstrap/Button';
-import moment from 'moment';
-import { DateRangePicker } from 'react-dates';
-import 'react-dates/lib/css/_datepicker.css';
 
 class SearchParams extends React.Component {
   constructor(props) {
@@ -65,7 +67,7 @@ class SearchParams extends React.Component {
 
   render() {
     return (
-      <div>
+      <>
         <h1>Search</h1>
         <Form>
           <FormGroup>
@@ -107,7 +109,7 @@ class SearchParams extends React.Component {
           </FormGroup>
           <Button variant='primary' onClick={this.onSearch}>Search</Button>
         </Form>
-      </div>
+      </>
     );
   }
 }

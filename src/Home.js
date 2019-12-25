@@ -1,4 +1,6 @@
 import React from 'react';
+
+import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import CardDeck from 'react-bootstrap/CardDeck';
@@ -29,10 +31,10 @@ class Home extends React.Component {
 
   render() {
     return (
-      <div className="Home">
+      <Container className="Home">
         <h1>Datasets from Exchanges</h1>
         <CardDeck>{this.getCards()}</CardDeck>
-      </div>
+      </Container>
     );
   }
 }

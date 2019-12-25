@@ -1,7 +1,9 @@
 import React from 'react';
+import ReCAPTCHA from 'react-google-recaptcha'
+
+import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import ReCAPTCHA from 'react-google-recaptcha'
 
 class Login extends React.Component {
   constructor(prop) {
@@ -64,7 +66,7 @@ class Login extends React.Component {
 
   render() {
     return (
-      <div className='Login'>
+      <Container className='Login'>
         <h1>Login</h1>
         <Form>
           <Form.Group controlId='formUserId'>
@@ -90,7 +92,7 @@ class Login extends React.Component {
           />
           <Button onClick={this.onLoginButton} variant='primary' disabled={this.disabled || this.state.token === null}>Login</Button>
         </Form>
-      </div>
+      </Container>
     );
   }
 }
