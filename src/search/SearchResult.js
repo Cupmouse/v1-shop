@@ -4,11 +4,14 @@ import moment from 'moment';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
-import { IoMdCart, IoMdArrowDropright } from 'react-icons/io';
+import Modal from 'react-bootstrap/Modal';
+import { IoMdArrowDropright } from 'react-icons/io';
+
+import { bytes } from '../utils/human_readable';
 
 import Pagination from '../component/Pagination';
+import CartButton from './CartButton';
 
-const SI_SUFFIX = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
 const DATE_FORMAT = 'YYYY/M/D HH:mm:ss';
 const NUM_ROWS = 10;
 
@@ -24,18 +27,6 @@ class SearchResult extends React.Component {
     this.getTableRow = this.getTableRow.bind(this);
   }
 
-  human_readable(raw_size) {
-    let hr = raw_size;
-    let i = 0;
-
-    for (; i < SI_SUFFIX.length; i++) {
-      if (hr < 1024)
-        break;
-      hr /= 1024;
-    }
-    return Math.round(hr*100)/100 + SI_SUFFIX[i];
-  }
-
   pairs(pairs, i) {
     pairs = pairs.split(',');
 
@@ -45,9 +36,10 @@ class SearchResult extends React.Component {
           <>
             {pairs.slice(0, 3).map(pair => pair + '\n')}
             <Button onClick={() => {
-              this.setState({ open: this.state.open })
-              this.state.open[i] = !this.state.open[i];
-            }} >
+              const new_open = this.state.open.splice(0, -1);
+              this.new_open[i] = !this.new_open[i];
+              this.setState({ open: new_open })
+            }} variant='outline-secondary' >
               Show more pairs
             </Button>
             <Collapse in={this.state.open[i]}>
@@ -74,9 +66,10 @@ class SearchResult extends React.Component {
           About {Math.round(moment.duration(date_end.diff(date_start)).asHours())} Hours
         </td>
         <td>{this.pairs(entry['pairs'], i)}</td>
-        <td>{this.human_readable(entry['raw_size'])}</td>
-        <td>${}</td>
-        <td><Button><IoMdCart /></Button></td>
+        <td><Button variant='outline-info'>Show sample</Button></td>
+        <td>{bytes(entry['raw_size'])}</td>
+        <td>${entry['price']/100}</td>
+        <td><CartButton id={entry['id']} /></td>
       </tr>
     );
   }
@@ -91,6 +84,7 @@ class SearchResult extends React.Component {
               <th>Exchange</th>
               <th>Date (Duration)</th>
               <th>Pairs</th>
+              <th>Sample</th>
               <th>Size</th>
               <th>Price</th>
               <th></th>
@@ -105,6 +99,19 @@ class SearchResult extends React.Component {
           page={typeof this.props.page === 'undefined' ? 1 : this.props.page}
           num_page={this.props.num_page}
         />
+        <Modal.Dialog>
+          <Modal.Header closeButton>
+          <Modal.Title>{this.state.sample_title}</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            {this.state.sample_text}
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button variant="primary">Close</Button>
+          </Modal.Footer>
+        </Modal.Dialog>
       </>
     );
   }

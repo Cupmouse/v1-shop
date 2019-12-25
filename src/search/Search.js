@@ -8,6 +8,7 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import SearchResult from './SearchResult';
 import SearchParams from './SearchParams';
+import { search } from '../utils/fetch';
 
 class Search extends React.Component {
   constructor(props) {
@@ -76,17 +77,7 @@ class Search extends React.Component {
       items: null,
     });
 
-    window.fetch('/api/search', {
-      method: 'POST',
-      mode: 'same-origin',
-      cache: 'no-cache',
-      credentials: 'omit',
-      headers: {'Content-Type': 'application/json'},
-      redirect: 'error',
-      referrer: 'no-referrer',
-      body: JSON.stringify(query),
-    }).then((res) => res.json())
-    .then((res) => {
+    search(query).then((res) => {
       this.setState({
         items: res.items,
         num_page: res.num_page,
@@ -95,15 +86,16 @@ class Search extends React.Component {
   }
 
   componentDidMount() {
-    if (typeof this.unlisten === 'undefined')
-      this.transition(this.props.location);
+    if (typeof this.unlisten === 'undefined') {
+    this.transition(this.props.location);
 
-    this.unlisten = this.props.history.listen((location) => {
-      if (location.pathname === '/search') {
-        // back button is pressed
-        this.transition(location);
-      }
-    });
+      this.unlisten = this.props.history.listen((location) => {
+        if (location.pathname === '/search') {
+          // back button is pressed
+          this.transition(location);
+        }
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -142,6 +134,7 @@ class Search extends React.Component {
                 items={this.state.items}
                 page={this.state.page}
                 num_page={this.state.num_page}
+                add_cb={this.addToCart}
               />
             }
           </Col>
