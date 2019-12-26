@@ -41,9 +41,11 @@ export const logout = (user_id, session_id) => {
 export const bought = (user_id, session_id) => {
   return post('/bought', {user_id, session_id}).then(res => res.json());
 }
-export const purchaseSetup = (data) => {
 
+export const sample = (id) => {
+  return post('/sample', {id}).then(res => res.text());
 }
+
 export const purchase = (user_id, session_id, order_id, ids) => {
   return post('/purchase', {user_id, session_id, order_id, ids}).then(res => res.json());
 }

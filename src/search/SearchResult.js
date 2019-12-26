@@ -4,6 +4,7 @@ import moment from 'moment';
 import { useCookies } from 'react-cookie';
 
 import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
 import Modal from 'react-bootstrap/Modal';
@@ -12,6 +13,7 @@ import { IoMdArrowDropright, IoMdCart, IoMdClose } from 'react-icons/io';
 import { bytes } from '../utils/human_readable';
 
 import Pagination from '../component/Pagination';
+import { sample } from '../utils/fetch';
 
 const DATE_FORMAT = 'YYYY/M/D HH:mm:ss';
 const NUM_ROWS = 10;
@@ -50,10 +52,33 @@ function AddButton(props) {
   }
 }
 
-function AddSearch(props) {
-  const [ cookies, setCookie ] = useCookies();
-
-  
+function SampleModal(props) {
+  return (
+    <Modal
+      show={props.show}
+      onHide={props.onHide}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          {props.title}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form.Control
+          as="textarea"
+          rows={16}
+          value={props.text}
+          readonly
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }
 
 class SearchResult extends React.Component {
@@ -62,10 +87,25 @@ class SearchResult extends React.Component {
     
     this.state = {
       open: Array(NUM_ROWS).fill(false),
+      sample_title: '',
+      sample_text: '',
+      sample_modal: false,
     };
 
     this.pairs = this.pairs.bind(this);
     this.getTableRow = this.getTableRow.bind(this);
+  }
+
+  showSample(id, name) {
+    sample(id).then(text => {
+      this.setState({
+        sample_modal: true,
+        sample_title: name,
+        sample_text: text,
+      });
+    }).catch(err => {
+      console.log(err);
+    });
   }
 
   pairs(pairs, i) {
@@ -107,7 +147,14 @@ class SearchResult extends React.Component {
           About {Math.round(moment.duration(date_end.diff(date_start)).asHours())} Hours
         </td>
         <td>{this.pairs(entry.pairs, i)}</td>
-        <td><Button variant='outline-info'>Show sample</Button></td>
+        <td>
+          <Button
+            onClick={() => this.showSample(entry.id, entry.name)}
+            variant='outline-info'
+          >
+            Show sample
+          </Button>
+        </td>
         <td>{bytes(entry.raw_size)}</td>
         <td>${entry.price/100}</td>
         <td><AddButton ids={[ entry.id ]}>Add to Cart</AddButton></td>
@@ -140,19 +187,12 @@ class SearchResult extends React.Component {
           page={typeof this.props.page === 'undefined' ? 1 : this.props.page}
           num_page={this.props.num_page}
         />
-        <Modal.Dialog>
-          <Modal.Header closeButton>
-          <Modal.Title>{this.state.sample_title}</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
-            {this.state.sample_text}
-          </Modal.Body>
-
-          <Modal.Footer>
-            <Button variant="primary">Close</Button>
-          </Modal.Footer>
-        </Modal.Dialog>
+        <SampleModal
+          show={this.state.sample_modal}
+          title={this.state.sample_title}
+          text={this.state.sample_text}
+          onHide={() => this.setState({ sample_modal: false })}
+        />
       </>
     );
   }
