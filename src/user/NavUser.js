@@ -6,7 +6,15 @@ import Nav from 'react-bootstrap/Nav';
 import { LinkContainer } from 'react-router-bootstrap';
 import { IoMdPersonAdd } from 'react-icons/io';
 
+import { isLoggedin, logout } from '../utils/fetch';
+import { withRouter } from 'react-router-dom';
+
 class NavUser extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onLogout = this.onLogout.bind(this);
+  }
+
   componentDidMount() {
     // check if a user is logged in
     const user_id = this.props.cookies.get('user_id');
@@ -16,30 +24,9 @@ class NavUser extends React.Component {
       return;
     }
 
-    const data = {
-      user_id,
-      session_id,
-    };
-
-    window.fetch('/api/isloggedin', {
-      method: 'POST',
-      mode: 'same-origin',
-      cache: 'no-cache',
-      credentials: 'omit',
-      headers: {'Content-Type': 'application/json'},
-      redirect: 'error',
-      referrer: 'no-referrer',
-      body: JSON.stringify(data),
-    }).then(response => response.json())
-    .then(response => {
+    isLoggedin(user_id, session_id).then(response => {
       if (response.error || !response.status)
         return;
-
-      this.setState({
-        user_id,
-        session_id,
-        logged_in: true,
-      });
     });
   }
 
@@ -47,65 +34,35 @@ class NavUser extends React.Component {
     const user_id = this.props.cookies.get('user_id');
     const session_id = this.props.cookies.get('session_id');
 
-    const data = {
-      user_id,
-      session_id,
-    };
-    
-    window.fetch('/api/logout', {
-      method: 'POST',
-      mode: 'same-origin',
-      cache: 'no-cache',
-      credentials: 'omit',
-      headers: {'Content-Type': 'application/json'},
-      redirect: 'error',
-      referrer: 'no-referrer',
-      body: JSON.stringify(data),
-    }).then(response => response.json())
-    .then(response => {
+    logout(user_id, session_id).then(response => {
       if (response.error)
         return;
 
       this.props.cookies.remove('user_id');
       this.props.cookies.remove('session_id');
 
-      this.setState({
-        user_id: null,
-        session_id: null,
-        logged_in: false,
-      });
       this.props.history.push('/');
     });
   }
-
-  onLogin(user_id, session_id) {
-    this.props.cookies.set('user_id', user_id, { maxAge: 24*60*60, path: '/' });
-    this.props.cookies.set('session_id', session_id, { maxAge: 24*60*60, path: '/' });
-    
-    this.setState({
-      user_id,
-      session_id,
-      logged_in: true,
-    });
-  }
-
+  
   render() {
-    if (this.props.logged_in) {
+    const user_id = this.props.cookies.get('user_id');
+    if (user_id === undefined) {
       return (
-        <Nav>
-          <LinkContainer to='/user'><Nav.Link className='mr-2'>{this.state.user_id}</Nav.Link></LinkContainer>
-          <Nav.Link className='mr-2' onClick={this.onLogout}>Logout</Nav.Link>
-        </Nav>
-      );
+        <>
+          <LinkContainer to='/signup'><Nav.Link className='mr-2'><IoMdPersonAdd /> Sign-up</Nav.Link></LinkContainer>
+          <LinkContainer to='/login'><Nav.Link className='btn btn-primary mr-2' role='button'>Login</Nav.Link></LinkContainer>
+        </>
+      )
     } else {
       return (
-        <Nav>
-          <LinkContainer to='/signup'><Nav.Link className='mr-2'><IoMdPersonAdd />Sign-up</Nav.Link></LinkContainer>
-          <LinkContainer to='/login'><Nav.Link className='btn btn-primary mr-2' role='button'>Login</Nav.Link></LinkContainer>
-        </Nav>
-      )
+        <>
+          <LinkContainer to='/user'><Nav.Link className='mr-2'>{user_id}</Nav.Link></LinkContainer>
+          <Nav.Link className='mr-2' onClick={this.onLogout}>Logout</Nav.Link>
+        </>
+      );
     }
   }
 }
 
-export default withCookies(NavUser);
+export default withCookies(withRouter(NavUser));

@@ -1,9 +1,13 @@
 import React from 'react';
 import ReCAPTCHA from 'react-google-recaptcha'
 
+import { withCookies } from 'react-cookie';
+
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
+
+import { login } from '../utils/fetch';
 
 class Login extends React.Component {
   constructor(prop) {
@@ -13,8 +17,9 @@ class Login extends React.Component {
       password: '',
       token: null,
       error: null,
-      disabled: false,
+      processing: false,
     }
+    this.rechaptchaRef = React.createRef();
     this.onLoginButton = this.onLoginButton.bind(this);
     this.onEmailChange = this.onEmailChange.bind(this);
     this.onPasswordChange = this.onPasswordChange.bind(this);
@@ -22,33 +27,25 @@ class Login extends React.Component {
   }
 
   onLoginButton(event) {
-    this.setState({disabled: true});
+    this.setState({processing: true});
 
     const user_id = this.state.email;
 
-    const data = {
-      user_id,
-      password: this.state.password,
-      token: this.state.token,
-    };
-
-    window.fetch('/api/login', {
-      method: 'POST',
-      mode: 'same-origin',
-      cache: 'no-cache',
-      credentials: 'omit',
-      headers: {'Content-Type': 'application/json'},
-      redirect: 'error',
-      referrer: 'no-referrer',
-      body: JSON.stringify(data),
-    }).then(response => response.json())
-    .then(response => {
+    login(user_id, this.state.password, this.state.token).then(response => {
       if (response.error) {
-        this.setState({error: response.error, disabled: false});
-      } else {
-        this.props.onLogin(user_id, response.session_id);
-        this.props.history.push('/');
+        return Promise.reject(response.error);
       }
+
+      const session_id = response.session_id;
+
+      this.props.cookies.set('user_id', user_id, { maxAge: 24*60*60, path: '/' });
+      this.props.cookies.set('session_id', session_id, { maxAge: 24*60*60, path: '/' });
+
+      // move to home page
+      this.props.history.push('/');
+    }).catch(err => {
+      this.setState({error: err, processing: false});
+      this.rechaptchaRef.current.reset();
     });
 
     event.preventDefault();
@@ -62,6 +59,16 @@ class Login extends React.Component {
   }
   onReCaptchaChange(val) {
     this.setState({ token: val });
+  }
+
+  getAlert() {
+    if (this.state.error) {
+      return (
+        <div className='alert alert-danger mt-2' role='alert'>
+          {this.state.error}
+        </div>
+      )
+    }
   }
 
   render() {
@@ -87,14 +94,16 @@ class Login extends React.Component {
           </Form.Group>
 
           <ReCAPTCHA
+            ref={this.rechaptchaRef}
             sitekey='6LfFackUAAAAAJr0Rnq8Gw1Yicwcbxcd9PbubXVX'
             onChange={this.onReCaptchaChange}
           />
-          <Button onClick={this.onLoginButton} variant='primary' disabled={this.disabled || this.state.token === null}>Login</Button>
+          <Button onClick={this.onLoginButton} variant='primary' disabled={this.processing || this.state.token === null}>Login</Button>
         </Form>
+        {this.getAlert()}
       </Container>
     );
   }
 }
 
-export default Login;
+export default withCookies(Login);

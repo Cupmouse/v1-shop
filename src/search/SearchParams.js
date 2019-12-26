@@ -2,6 +2,7 @@ import React from 'react';
 
 import moment from 'moment';
 
+import { IoMdSearch } from 'react-icons/io';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import Form from 'react-bootstrap/Form';
@@ -107,7 +108,7 @@ class SearchParams extends React.Component {
               onFocusChange={focused_input => this.setState({ focused_input })}
             />
           </FormGroup>
-          <Button variant='primary' onClick={this.onSearch}>Search</Button>
+          <Button variant='primary' onClick={this.onSearch}><IoMdSearch /> Search</Button>
         </Form>
       </>
     );

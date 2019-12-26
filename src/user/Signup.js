@@ -18,8 +18,9 @@ class Signup extends React.Component {
       token: null,
       error: null,
       warning: 'Please enter a email address and password',
-      disabled: false,
+      processing: false,
     };
+    this.rechaptchaRef = React.createRef();
     this.onSignupButton = this.onSignupButton.bind(this);
     this.onEmailChange = this.onEmailChange.bind(this);
     this.onPasswordChange = this.onPasswordChange.bind(this);
@@ -28,7 +29,7 @@ class Signup extends React.Component {
   }
 
   onSignupButton(event) {
-    this.setState({disabled: true});
+    this.setState({processing: true});
 
     const data = {
       user_id: this.state.email,
@@ -38,11 +39,14 @@ class Signup extends React.Component {
 
     signup(data).then(response => {
       if (response.error) {
-        this.setState({error: response.error, disabled: false});
+        return Promise.reject(response.error);
       } else {
         alert('User is created. Press OK to move to login page.');
         this.props.history.push('/login');
       }
+    }).catch(err => {
+      this.setState({error: err, processing: false});
+      this.rechaptchaRef.current.reset();
     });
 
     event.preventDefault();
@@ -75,7 +79,8 @@ class Signup extends React.Component {
   }
   onRepeatChange(event) {
     let new_repeat = event.target.value;
-    this.setState({repeat: event.target.value,
+    this.setState({
+      repeat: event.target.value,
       warning: this.getWarningMsg(this.state.email, this.state.password, new_repeat),
     })
   }
@@ -133,10 +138,11 @@ class Signup extends React.Component {
             disabled={this.state.processing} />
           </Form.Group>
           <ReCAPTCHA
+            ref={this.rechaptchaRef}
             sitekey='6LfFackUAAAAAJr0Rnq8Gw1Yicwcbxcd9PbubXVX'
             onChange={this.onReCaptchaChange}
           />
-          <Button onClick={this.onSignupButton} variant='primary' disabled={this.state.disabled || this.state.token === null || this.state.processing || this.state.warning}>Sign-up</Button>
+          <Button onClick={this.onSignupButton} variant='primary' disabled={this.state.token === null || this.state.processing || this.state.warning}>Sign-up</Button>
         </Form>
         {this.getWarning()}
         {this.getAlert()}
