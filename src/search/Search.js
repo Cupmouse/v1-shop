@@ -22,6 +22,7 @@ class Search extends React.Component {
       page: null,
       num_page: 0,
       items: null,
+      ids: null,
     };
 
     this.changePage = this.changePage.bind(this);
@@ -85,6 +86,7 @@ class Search extends React.Component {
       this.setState({
         items: res.items,
         num_page: res.num_page,
+        ids: res.ids,
       });
     });
   }
@@ -138,7 +140,7 @@ class Search extends React.Component {
                 items={this.state.items}
                 page={this.state.page}
                 num_page={this.state.num_page}
-                add_cb={this.addToCart}
+                ids={this.state.ids}
               />
             }
           </Col>

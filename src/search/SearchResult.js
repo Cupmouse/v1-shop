@@ -1,54 +1,19 @@
 import React from 'react';
 import moment from 'moment';
 
-import { useCookies } from 'react-cookie';
-
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
-import { IoMdArrowDropright, IoMdCart, IoMdClose } from 'react-icons/io';
-
-import { bytes } from '../utils/human_readable';
+import { IoMdArrowDropright } from 'react-icons/io';
 
 import Pagination from '../component/Pagination';
+import AddCartButton from './AddCartButton';
+
+import { bytes } from '../utils/human_readable';
 import { sample } from '../utils/api';
 
 const DATE_FORMAT = 'YYYY/M/D HH:mm:ss';
 const NUM_ROWS = 10;
-
-function AddButton(props) {
-  const [ cookies, setCookie ] = useCookies();
-
-  const addToCart = () => {
-    let cart = cookies.cart;
-    
-    if (cart === undefined || !Array.isArray(cart))
-      cart = [];
-    
-    cart = cart.concat(props.ids);
-
-    setCookie('cart', Array.from(new Set(cart)), { path: '/' });
-  }
-
-  const removeFromCart = () => {
-    // sustain every ids that is not included in props.ids
-    const new_cart = cookies.cart.filter(id => !props.ids.some(b => id === b));
-    setCookie('cart', new_cart, { path: '/' });
-  }
-
-  const cart = cookies.cart;
-
-  // if every props.ids is included in cart, delete button
-  if (cart !== undefined && props.ids.every(id => cart.some(b => id === b))) {
-    return (
-      <Button onClick={removeFromCart} variant='outline-danger'><IoMdClose />Delete</Button>
-    );
-  } else {
-    return (
-      <Button onClick={addToCart} variant='primary'><IoMdCart /> {props.children}</Button>
-    );
-  }
-}
 
 class SearchResult extends React.Component {
   constructor(props) {
@@ -60,8 +25,12 @@ class SearchResult extends React.Component {
 
     this.pairs = this.pairs.bind(this);
     this.getTableRow = this.getTableRow.bind(this);
+    this.onCartChange = this.onCartChange.bind(this);
   }
 
+  onCartChange() {
+    this.setState({ forcererender: Math.random() });
+  }
 
   pairs(pairs, i) {
     pairs = pairs.split(',');
@@ -112,7 +81,7 @@ class SearchResult extends React.Component {
         </td>
         <td>{bytes(entry.raw_size)}</td>
         <td>${entry.price/100}</td>
-        <td><AddButton ids={[ entry.id ]}>Add to Cart</AddButton></td>
+        <td><AddCartButton ids={[ entry.id ]} onChange={this.onCartChange} variant='primary'>Add to Cart</AddCartButton></td>
       </tr>
     );
   }
@@ -120,7 +89,11 @@ class SearchResult extends React.Component {
   render() {
     return (
       <>
-        <h1>Search Result (New to Old)</h1>
+        <h1>
+          Search Result (New to Old)
+          <AddCartButton ids={this.props.ids} onChange={this.onCartChange} className='ml-3' variant='danger'>All in Result</AddCartButton>
+        </h1>
+        
         <Table striped bordered hover responsive>
           <thead>
             <tr>
@@ -130,7 +103,7 @@ class SearchResult extends React.Component {
               <th>Sample</th>
               <th>Size</th>
               <th>Price</th>
-              <th><AddButton ids={this.props.items.map(item => item.id)}>All in Page</AddButton></th>
+              <th><AddCartButton ids={this.props.items.map(item => item.id)} onChange={this.onCartChange} variant='primary'>All in Page</AddCartButton></th>
             </tr>
           </thead>
           <tbody>

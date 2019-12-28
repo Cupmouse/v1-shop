@@ -51,12 +51,14 @@ class Table extends React.Component {
   }
 
   componentDidMount() {
-    let cart = this.props.cookies.get('cart');
+    let cart = window.localStorage.getItem('cart');
     const user_id = this.props.cookies.get('user_id');
     const session_id = this.props.cookies.get('session_id');
 
-    if (cart === undefined)
+    if (cart === null)
       cart = [];
+    else
+      cart = cart.split(',').filter(id => Number.isInteger(id)).map(id => parseInt(id));
 
     isLoggedin(user_id, session_id).then(response => {
       if (response.error || !response.status) {
@@ -67,17 +69,11 @@ class Table extends React.Component {
 
       return bought(user_id, session_id).then((bids) => {
         // update the cart. you don't want items you already bought, so remove duplicates
-        console.log(cart)
-        if (cart === undefined || !Array.isArray(cart) || cart.some(id => typeof id !== 'number' || !Number.isInteger(id))) {
-          this.props.cookies.set('cart', []);
-          return;
-        }
-        
         cart = new Set(cart);
         bids.forEach(bid => cart.delete(bid));
         cart = Array.from(cart.values());
 
-        this.props.cookies.set('cart', cart, { path: '/' });
+        window.localStorage.setItem('cart', cart.join(','));
         
         this.refresh(cart);
         this.setState({ logged_in: true })
@@ -93,7 +89,7 @@ class Table extends React.Component {
 
   removeItem(id) {
     const new_items = this.state.items.map(item => item.id).filter(item_id => item_id !== id);
-    this.props.cookies.set('cart', new_items, { path: '/' });
+    window.localStorage.setItem('cart', new_items.join(','));
 
     this.refresh(new_items);
   }
@@ -215,7 +211,7 @@ class Table extends React.Component {
 
 Table = withRouter(withCookies(Table));
 
-function Cart(props) {
+function Cart() {
   return (
     <Container className='Cart'>
       <Row><Col><h1>Cart</h1></Col></Row>
