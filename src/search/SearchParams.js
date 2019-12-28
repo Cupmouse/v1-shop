@@ -13,10 +13,10 @@ class SearchParams extends React.Component {
   constructor(props) {
     super(props);
 
-    const exchanges = typeof props.query_exchanges === 'undefined' ? Object.keys(props.exchanges) : props.query_exchanges;
-    const pairs = typeof props.pairs === 'undefined' ? '' : props.pairs.join(',');
-    const date_start = typeof props.date_start === 'undefined' ? null : moment(props.date_start*1000);
-    const date_end = typeof props.date_end === 'undefined' ? null : moment(props.date_end*1000);
+    const exchanges = props.query_exchanges === null ? Object.keys(props.exchanges) : props.query_exchanges;
+    const pairs = props.pairs === null ? '' : props.pairs.join(',');
+    const date_start = props.date_start === null ? null : moment(props.date_start*1000);
+    const date_end = props.date_end === null ? null : moment(props.date_end*1000);
 
     this.state = {
       exchanges,
@@ -62,6 +62,8 @@ class SearchParams extends React.Component {
     if (this.state.date_end !== null) {
       query.date_end = this.state.date_end.unix();
     }
+
+    query.page = 1;
 
     this.props.searchcb(query);
   }

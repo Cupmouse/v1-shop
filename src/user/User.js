@@ -16,7 +16,7 @@ class User extends React.Component {
     return (
       <Container className='User'>
         <h1>User: {user_id}</h1>
-        <h2><Link to='/user/purchase_history'>Purchase History</Link></h2>
+        <h2><Link to='/user/orders'>=> Orders and Downloads</Link></h2>
       </Container>
     );
   }

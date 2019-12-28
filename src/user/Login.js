@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 
-import { login } from '../utils/fetch';
+import { login } from '../utils/api';
 
 class Login extends React.Component {
   constructor(prop) {
@@ -38,8 +38,8 @@ class Login extends React.Component {
 
       const session_id = response.session_id;
 
-      this.props.cookies.set('user_id', user_id, { maxAge: 24*60*60, path: '/' });
-      this.props.cookies.set('session_id', session_id, { maxAge: 24*60*60, path: '/' });
+      this.props.cookies.set('user_id', user_id, { maxAge: 2*60*60, path: '/' });
+      this.props.cookies.set('session_id', session_id, { maxAge: 2*60*60, path: '/' });
 
       // move to home page
       this.props.history.push('/');

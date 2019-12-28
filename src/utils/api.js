@@ -1,10 +1,10 @@
-
-const API_URL = '/api'
+import { API_URL } from './variables';
+import download from 'downloadjs';
 
 const post = (dir, data) => {
   return window.fetch(API_URL + dir, {
     method: 'POST',
-    mode: 'same-origin',
+    mode: 'cors',
     cache: 'no-cache',
     credentials: 'omit',
     headers: {'Content-Type': 'application/json'},
@@ -42,10 +42,24 @@ export const bought = (user_id, session_id) => {
   return post('/bought', {user_id, session_id}).then(res => res.json());
 }
 
-export const sample = (id) => {
-  return post('/sample', {id}).then(res => res.text());
-}
-
 export const purchase = (user_id, session_id, order_id, ids) => {
   return post('/purchase', {user_id, session_id, order_id, ids}).then(res => res.json());
+}
+
+export const listorder = (user_id, session_id) => {
+  return post('/listorder', {user_id, session_id}).then(res => res.json());
+}
+
+export const order = (user_id, session_id, order_id) => {
+  return post('/order', {user_id, session_id, order_id}).then(res => res.json());
+}
+
+export const listdownload = (user_id, session_id) => {
+  return post('/listdownload', {user_id, session_id}).then(res => res.json());
+}
+
+export const sample = (id, name) => {
+  post('/sample', {id})
+  .then(res => res.blob())
+  .then(blob => download(blob, name, 'text/plain'));
 }

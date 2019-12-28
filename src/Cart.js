@@ -1,18 +1,21 @@
 import React from 'react';
 
 import { withCookies } from 'react-cookie';
+import { withRouter } from 'react-router-dom';
 
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import BootstrapTable from 'react-bootstrap/Table';
 import Collapse from 'react-bootstrap/Collapse';
 import { IoMdClose } from 'react-icons/io';
 import LoadingOverlay from 'react-loading-overlay';
 
 import { bytes } from './utils/human_readable';
-import { cart, purchase, bought, isLoggedin } from './utils/fetch';
+import { HOME_URL } from './utils/variables';
+import { cart, purchase, bought, isLoggedin } from './utils/api';
 
 
 class Table extends React.Component {
@@ -26,11 +29,14 @@ class Table extends React.Component {
       processing: false,
       price_right: false,
       logged_in: false,
+      agree: false,
     };
     this.removeItem = this.removeItem.bind(this);
     this.getRow = this.getRow.bind(this);
     this.createOrder = this.createOrder.bind(this);
     this.onApprove = this.onApprove.bind(this);
+    this.onClick = this.onClick.bind(this);
+    this.onAgree = this.onAgree.bind(this);
   }
 
   refresh(ids) {
@@ -79,6 +85,7 @@ class Table extends React.Component {
     });
 
     window.paypal.Buttons({
+      onClick: this.onClick,
       createOrder: this.createOrder,
       onApprove: this.onApprove,
     }).render('#paypal-button-container');
@@ -104,15 +111,37 @@ class Table extends React.Component {
   onApprove(data, actions) {
     this.setState({ processing: true });
 
+    const user_id = this.props.cookies.get('user_id');
+    const session_id = this.props.cookies.get('session_id');
+    const ids = this.state.items.map(item => item.id);
+
     return actions.order.capture().then((details) => {
-      return purchase(data.orderId, this.state.items.map(item => item.id));
+      return purchase(user_id, session_id, data.orderID, ids);
     }).then(res => {
-      console.log(res);
       if (res.error) {
+        this.setState({ processing: false });
+        alert(res.error);
         return actions.restart();
       }
-    }).catch(() => {
+      this.props.history.push('/user/orders');
+    }).catch(err => {
+      this.setState({ processing: false });
+      alert('Transaction could not be completed. Please check your paypal account or credit card.');
       return actions.restart();
+    });
+  }
+
+  onClick(data, actions) {
+    const user_id = this.props.cookies.get('user_id');
+    const session_id = this.props.cookies.get('session_id');
+
+    return isLoggedin(user_id, session_id).then(data => {
+      if (data.error) {
+        alert('Please login');
+        return actions.reject();
+      } else {
+        return actions.resolve();
+      }
     });
   }
 
@@ -124,6 +153,12 @@ class Table extends React.Component {
           value: (this.state.sum_price / 100).toString(),
         }
       }],
+    });
+  }
+
+  onAgree(event) {
+    this.setState({
+      agree: !this.state.agree,
     });
   }
 
@@ -154,6 +189,10 @@ class Table extends React.Component {
               <td>${this.state.sum_price/100}</td>
               <td>
                 <h4>Checkout:</h4>
+                <Form.Check type='checkbox'>
+                  <Form.Check.Input type='checkbox' onClick={this.onAgree} checked={this.agree} />
+                  <Form.Check.Label>I agree to <a href={HOME_URL + '/termsofservice'} target='_blank' rel='noopener noreferrer'>the Terms of Service</a>.</Form.Check.Label>
+                </Form.Check>
                 {
                   !this.state.price_right ?
                     <p>Minimum checkout amount is $5. You need to add more items.</p> : ''
@@ -162,7 +201,7 @@ class Table extends React.Component {
                   !this.state.logged_in ?
                     <p>You must be logged in to purchase.</p> : ''
                 }
-                <Collapse in={this.state.logged_in && this.state.price_right}>
+                <Collapse in={this.state.agree && this.state.logged_in && this.state.price_right}>
                   <div id="paypal-button-container"></div>
                 </Collapse>
               </td>
@@ -174,7 +213,7 @@ class Table extends React.Component {
   }
 }
 
-Table = withCookies(Table);
+Table = withRouter(withCookies(Table));
 
 function Cart(props) {
   return (

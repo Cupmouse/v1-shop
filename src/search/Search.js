@@ -8,14 +8,18 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import SearchResult from './SearchResult';
 import SearchParams from './SearchParams';
-import { search } from '../utils/fetch';
+import { search } from '../utils/api';
 
 class Search extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      ...this.makeQueryFromLocation(props.location),
+      exchanges: null,
+      pairs: null,
+      date_start: null,
+      date_end: null,
+      page: null,
       num_page: 0,
       items: null,
     };
@@ -61,11 +65,11 @@ class Search extends React.Component {
     const query = this.makeQueryFromLocation(location);
 
     let new_state = {
-      exchanges: undefined,
-      pairs: undefined,
-      date_start: undefined,
-      date_end: undefined,
-      page: undefined,
+      exchanges: null,
+      pairs: null,
+      date_start: null,
+      date_end: null,
+      page: null,
     }
 
     new_state = {

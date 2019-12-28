@@ -6,7 +6,7 @@ import Nav from 'react-bootstrap/Nav';
 import { LinkContainer } from 'react-router-bootstrap';
 import { IoMdPersonAdd } from 'react-icons/io';
 
-import { isLoggedin, logout } from '../utils/fetch';
+import { isLoggedin, logout } from '../utils/api';
 import { withRouter } from 'react-router-dom';
 
 class NavUser extends React.Component {
@@ -34,12 +34,12 @@ class NavUser extends React.Component {
     const user_id = this.props.cookies.get('user_id');
     const session_id = this.props.cookies.get('session_id');
 
+    this.props.cookies.remove('user_id');
+    this.props.cookies.remove('session_id');
+
     logout(user_id, session_id).then(response => {
       if (response.error)
         return;
-
-      this.props.cookies.remove('user_id');
-      this.props.cookies.remove('session_id');
 
       this.props.history.push('/');
     });

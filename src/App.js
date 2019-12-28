@@ -15,8 +15,9 @@ import Signup from './user/Signup';
 import Login from './user/Login';
 import Search from './search/Search';
 import User from './user/User';
-import PurchaseHistory from './user/PurchaseHistory';
+import UserOrders from './user/UserOrders';
 import Cart from './Cart';
+import Order from './Order';
 import NotFound from './NotFound';
 
 const exchanges = {
@@ -49,11 +50,12 @@ class App extends React.Component {
           <Switch>
             <Route exact path='/' component={(props) => <Home exchanges={exchanges} {...props} />} />
             <Route exact path='/search' component={(props) => <Search exchanges={exchanges} {...props} />} />
-            <Route exact path='/signup' component={(props) => <Signup {...props} />} />
-            <Route exact path='/login' component={(props) => <Login {...props} />} />
-            <Route exact path='/user' component={(props) => <User {...props} />} />
-            <Route exact path='/user/purchase_history' component={PurchaseHistory} />
-            <Route exact path='/cart' component={(props) => <Cart setOverlay={this.setOverlay} {...props} />} />
+            <Route exact path='/cart' component={Cart} />
+            <Route exact path='/signup' component={Signup} />
+            <Route exact path='/login' component={Login} />
+            <Route exact path='/user' component={User} />
+            <Route exact path='/user/orders' component={UserOrders} />
+            <Route path='/order/:order_id' component={Order} />
             <Route component={NotFound} />
           </Switch>
         </BrowserRouter>
