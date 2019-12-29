@@ -10,7 +10,7 @@ function AddCartButton(props) {
     if (cart === null)
       cart = [];
     else
-      cart = cart.split(',').filter(id => Number.isInteger(id)).map(id => parseInt(id));
+      cart = cart.split(',').map(id => parseInt(id)).filter(id => Number.isInteger(id));
     cart = cart.concat(props.ids);
     window.localStorage.setItem('cart', Array.from(new Set(cart)).join(','));
 
@@ -20,8 +20,8 @@ function AddCartButton(props) {
   const removeFromCart = () => {
     // sustain every ids that is not included in props.ids
     const new_cart = window.localStorage.getItem('cart').split(',')
-      .filter(id => Number.isInteger(id))
       .map(id => parseInt(id))
+      .filter(id => Number.isInteger(id))
       .filter(id => !props.ids.some(b => id === b));
     window.localStorage.setItem('cart', new_cart.join(','));
 

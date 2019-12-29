@@ -58,7 +58,7 @@ class Table extends React.Component {
     if (cart === null)
       cart = [];
     else
-      cart = cart.split(',').filter(id => Number.isInteger(id)).map(id => parseInt(id));
+      cart = cart.split(',').map(id => parseInt(id)).filter(id => Number.isInteger(id));
 
     isLoggedin(user_id, session_id).then(response => {
       if (response.error || !response.status) {
@@ -74,9 +74,10 @@ class Table extends React.Component {
         cart = Array.from(cart.values());
 
         window.localStorage.setItem('cart', cart.join(','));
+        this.props.navcart();
         
         this.refresh(cart);
-        this.setState({ logged_in: true })
+        this.setState({ logged_in: true });
       });
     });
 
@@ -90,6 +91,7 @@ class Table extends React.Component {
   removeItem(id) {
     const new_items = this.state.items.map(item => item.id).filter(item_id => item_id !== id);
     window.localStorage.setItem('cart', new_items.join(','));
+    this.props.navcart();
 
     this.refresh(new_items);
   }
@@ -211,13 +213,13 @@ class Table extends React.Component {
 
 Table = withRouter(withCookies(Table));
 
-function Cart() {
+function Cart(props) {
   return (
     <Container className='Cart'>
       <Row><Col><h1>Cart</h1></Col></Row>
       <Row>
         <Col>
-          <Table />
+          <Table navcart={props.navcart} />
         </Col>
       </Row>
     </Container>

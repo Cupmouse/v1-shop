@@ -17,6 +17,7 @@ function URLModal(props) {
   return (
     <Modal
       show={props.show}
+      onHide={props.onHide}
       size='lg'
       centered
     >
@@ -93,6 +94,12 @@ class Order extends React.Component {
           ))}
           <tr>
             <td>Total</td>
+            <td>{bytes(this.state.order.sum_size)}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
             <td>${this.state.order.total}</td>
             <td></td>
             <td><Button onClick={() => this.setState({ modal_show: true })} variant='primary'>List URLs</Button></td>

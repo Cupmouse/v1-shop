@@ -30,6 +30,7 @@ class SearchResult extends React.Component {
 
   onCartChange() {
     this.setState({ forcererender: Math.random() });
+    this.props.navcart();
   }
 
   pairs(pairs, i) {

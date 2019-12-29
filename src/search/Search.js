@@ -141,6 +141,7 @@ class Search extends React.Component {
                 page={this.state.page}
                 num_page={this.state.num_page}
                 ids={this.state.ids}
+                navcart={this.props.navcart}
               />
             }
           </Col>

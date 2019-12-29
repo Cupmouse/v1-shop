@@ -29,8 +29,7 @@ class UserOrders extends React.Component {
     return (
       <Container className='UserOrders'>
         <h1>Orders History</h1>
-        <h2>Order Ids</h2>
-        {this.state.order_ids.map(id => <h3 key={id}><Link to={'/order/' + id}>{id}</Link></h3>)}
+        {this.state.order_ids.map(id => <h3 key={id}><Link to={'/order/' + id}>=> Order: {id}</Link></h3>)}
       </Container>
     );
   }

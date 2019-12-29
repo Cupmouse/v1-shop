@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 
 import 'react-dates/initialize';
 
@@ -27,6 +27,16 @@ const exchanges = {
 };
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.navcartRef = createRef();
+    this.navcart = this.navcart.bind(this);
+  }
+
+  navcart() {
+    this.navcartRef.current.onCartChange();
+  }
+
   render() {
     return (
       <div className='App'>
@@ -41,7 +51,7 @@ class App extends React.Component {
                   <LinkContainer to='/search'><Nav.Link><IoMdSearch /> Search</Nav.Link></LinkContainer>
                 </Nav>
                 <Nav>
-                  <NavCart />
+                  <NavCart ref={this.navcartRef} />
                   <NavUser />
                 </Nav>
               </Navbar.Collapse>
@@ -49,8 +59,8 @@ class App extends React.Component {
           </header>
           <Switch>
             <Route exact path='/' component={(props) => <Home exchanges={exchanges} {...props} />} />
-            <Route exact path='/search' component={(props) => <Search exchanges={exchanges} {...props} />} />
-            <Route exact path='/cart' component={Cart} />
+            <Route exact path='/search' component={(props) => <Search exchanges={exchanges} navcart={this.navcart} {...props} />} />
+            <Route exact path='/cart' component={(props) => <Cart navcart={this.navcart} {...props} />} />
             <Route exact path='/signup' component={Signup} />
             <Route exact path='/login' component={Login} />
             <Route exact path='/user' component={User} />
