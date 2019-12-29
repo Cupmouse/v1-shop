@@ -2,6 +2,7 @@ import React from 'react';
 
 import { withCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
+import makeAsyncScriptLoader from 'react-async-script';
 
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
@@ -14,9 +15,14 @@ import { IoMdClose } from 'react-icons/io';
 import LoadingOverlay from 'react-loading-overlay';
 
 import { bytes } from './utils/human_readable';
-import { HOME_URL } from './utils/variables';
+import { HOME_URL, PAYPAL_CLIENT_ID } from './utils/variables';
 import { cart, purchase, bought, isLoggedin } from './utils/api';
 
+function PaypalSmartButton() {
+  return <div id="paypal-button-container"></div>
+}
+
+PaypalSmartButton = makeAsyncScriptLoader('https://www.paypal.com/sdk/js?client-id=' + PAYPAL_CLIENT_ID)(PaypalSmartButton);
 
 class Table extends React.Component {
   constructor(props) {
@@ -37,6 +43,7 @@ class Table extends React.Component {
     this.onApprove = this.onApprove.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onAgree = this.onAgree.bind(this);
+    this.onLoad = this.onLoad.bind(this);
   }
 
   refresh(ids) {
@@ -80,12 +87,6 @@ class Table extends React.Component {
         this.setState({ logged_in: true });
       });
     });
-
-    window.paypal.Buttons({
-      onClick: this.onClick,
-      createOrder: this.createOrder,
-      onApprove: this.onApprove,
-    }).render('#paypal-button-container');
   }
 
   removeItem(id) {
@@ -160,6 +161,14 @@ class Table extends React.Component {
     });
   }
 
+  onLoad() {
+    window.paypal.Buttons({
+      onClick: this.onClick,
+      createOrder: this.createOrder,
+      onApprove: this.onApprove,
+    }).render('#paypal-button-container');
+  }
+
   render() {
     return (
       <LoadingOverlay
@@ -200,7 +209,9 @@ class Table extends React.Component {
                     <p>You must be logged in to purchase.</p> : ''
                 }
                 <Collapse in={this.state.agree && this.state.logged_in && this.state.price_right}>
-                  <div id="paypal-button-container"></div>
+                  <div>
+                    <PaypalSmartButton asyncScriptOnLoad={this.onLoad} />
+                  </div>
                 </Collapse>
               </td>
             </tr>
