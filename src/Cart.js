@@ -18,7 +18,11 @@ import { bytes } from './utils/human_readable';
 import { HOME_URL, PAYPAL_CLIENT_ID } from './utils/variables';
 import { cart, purchase, bought, isLoggedin } from './utils/api';
 
-const PaypalSmartButton = makeAsyncScriptLoader('https://www.paypal.com/sdk/js?client-id=' + PAYPAL_CLIENT_ID)(<div id="paypal-button-container"></div>);
+function PaypalSmartButtonContainer() {
+  return <div id="paypal-button-container"></div>
+}
+
+const PaypalSmartButton = makeAsyncScriptLoader('https://www.paypal.com/sdk/js?client-id=' + PAYPAL_CLIENT_ID)(PaypalSmartButtonContainer);
 
 class Table extends React.Component {
   constructor(props) {
