@@ -32,7 +32,7 @@ class Home extends React.Component {
   render() {
     return (
       <Container className="Home">
-        <h1>Datasets from Exchanges</h1>
+        <h1>Exchanges</h1>
         <CardDeck>{this.getCards()}</CardDeck>
       </Container>
     );
