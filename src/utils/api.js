@@ -56,6 +56,10 @@ export const order = (user_id, session_id, order_id) => {
 
 export const sample = (id, name) => {
   post('/shop/sample', {id})
-  .then(res => res.blob())
-  .then(blob => download(blob, name, 'text/plain'));
+  .then(res => {
+    if (res.ok) { 
+      return res.blob()
+        .then(blob => download(blob, name, 'text/plain'))
+    }
+  })
 }
